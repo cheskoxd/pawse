@@ -25,8 +25,7 @@
         <h1>A calmer corner of the internet.</h1>
         <p>
           Pawse blocks a built-in list of adult sites and any hostnames you add.
-          Turn on strict matching for broader coverage, choose the animals, and add
-          exceptions when you need them.
+          Choose the animals, add exceptions, or turn on broader hostname matching.
         </p>
       </section>
 
@@ -44,12 +43,17 @@
             </label>
           </div>
 
+          <p class="card-copy">
+            Pawse has standing access only to the 35 listed domains and their subdomains.
+          </p>
+
           <label class="check-row" for="strict-enabled">
             <span>
               <strong>Strict hostname matching</strong>
               <small>
-                Catch more obvious adult hostnames. This can occasionally block an
-                unrelated site, so the allowlist always wins.
+                Block more obvious adult hostnames without requesting access to every
+                site. Strict-only matches use Chrome's standard blocked page and may
+                include false positives, so the allowlist always wins.
               </small>
             </span>
             <input id="strict-enabled" type="checkbox" />
@@ -64,7 +68,8 @@
             </div>
           </div>
           <p class="card-copy">
-            Add a URL or hostname. Pawse blocks that exact hostname and its subdomains.
+            Add a URL or hostname. Pawse blocks that hostname and its subdomains with
+            Chrome's standard blocked page.
           </p>
           <form class="domain-form" data-kind="block">
             <label for="blocked-input">Website to block</label>
@@ -94,7 +99,7 @@
             </div>
           </div>
           <p class="card-copy">
-            Add an exception if the built-in or strict rules catch the wrong site.
+            Add an exception if a built-in, strict, or custom rule catches the wrong site.
           </p>
           <form class="domain-form" data-kind="allow">
             <label for="allowed-input">Website to allow</label>
@@ -192,8 +197,8 @@
         sites and mixed-use platforms can slip past a hostname list.
       </p>
       <p>
-        Chrome requires site access so Pawse can redirect matching hostnames. Pawse
-        does not upload URLs or browsing data.
+        Chrome grants Pawse ongoing site access only for the 35 bundled domains and
+        their subdomains. Pawse does not upload URLs or browsing data.
       </p>
     </footer>
   </body>

@@ -26,7 +26,7 @@ function render() {
   toggle.checked = enabled;
   statusTitle.textContent = enabled ? "Blocking is on" : "Blocking is off";
   statusCopy.textContent = enabled
-    ? "Known and custom sites will be redirected."
+    ? "Known sites get the Pawse page. Custom and strict matches are blocked."
     : "Sites will open normally until blocking is turned on.";
   toggle.disabled = false;
   statusCard.setAttribute("aria-busy", "false");

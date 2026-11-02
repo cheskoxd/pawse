@@ -5,19 +5,19 @@
 <h1 align="center">Pawse</h1>
 
 <p align="center">
-  An on-device Chrome extension that redirects adult sites to a calmer page with cats and dogs.
+  An on-device Chrome extension that redirects 35 known adult sites and blocks custom matches.
 </p>
 
 <p align="center">
   Manifest V3 &nbsp;·&nbsp; Chrome 101+ &nbsp;·&nbsp; No build step &nbsp;·&nbsp; No telemetry
 </p>
 
-Pawse redirects top-level visits to 35 bundled adult domains. You can add your own blocked hostnames, create exceptions with an allowlist, and optionally enable broader hostname matching. Everything runs from the files in this repository.
+Pawse redirects top-level visits to 35 bundled adult domains. You can block more hostnames, create exceptions with an allowlist, and optionally enable broader hostname matching. Everything runs from the files in this repository.
 
 ## Features
 
 - Redirects 35 bundled domains and their subdomains to a local detour page.
-- Adds custom hostnames and their subdomains to a personal blocklist.
+- Blocks custom hostnames and their subdomains without requesting ongoing access to them.
 - Lets the allowlist override bundled, strict, and custom blocking rules.
 - Offers optional strict hostname rules for broader coverage.
 - Rotates between bundled cat and dog artwork with short, nonjudgmental messages.
@@ -47,17 +47,18 @@ Chrome disables extensions in Incognito by default. Open Pawse's **Details** pag
 
 ## How it works
 
-Pawse uses Chrome's Declarative Net Request API to inspect top-level HTTP and HTTPS navigation locally. The bundled rules match known hostnames, while custom block and allow entries become dynamic rules. An allow rule has the highest priority.
+Pawse uses Chrome's Declarative Net Request API to handle top-level HTTP and HTTPS navigation locally. One bundled redirect rule covers 35 listed domains and their subdomains. Those matches open the local Pawse page.
 
-Strict matching is off by default. When enabled, four additional regular-expression rules inspect hostnames for common adult-site terms. They do not scan page contents, paths, or search queries, but they can still produce false positives.
+Custom and strict matches use Chrome's safe `block` rules, which do not need host access. Chrome shows its standard blocked-request page for those matches. Strict matching is off by default and can still produce false positives. The allowlist has the highest priority.
 
 ## Permissions
 
 | Permission | Why Pawse needs it |
 | --- | --- |
 | `storage` | Saves preferences and custom hostname lists on this device. |
-| `declarativeNetRequestWithHostAccess` | Lets Chrome apply Pawse's local redirect and allow rules. |
-| HTTP and HTTPS site access | Lets those rules match website navigation and lets the popup read the active web tab's hostname when you open it. |
+| `activeTab` | Temporarily reads the current tab's hostname after you open the popup. |
+| `declarativeNetRequest` | Lets Chrome apply local redirect, block, and allow rules without exposing page contents to Pawse. |
+| 35 listed host patterns | Lets those domains and their subdomains redirect to the local Pawse page. Pawse does not request access to every site. |
 
 Pawse's code does not initiate remote requests or upload URLs. See [PRIVACY.md](PRIVACY.md) for the full data and permissions explanation.
 

@@ -24,11 +24,12 @@ The automated checks do not launch Chrome. Before opening a pull request, also w
 
 - [ ] Pawse loads without errors on `chrome://extensions`.
 - [ ] The popup controls and Settings link work.
-- [ ] Adding `pawse-block.invalid` to the custom blocklist redirects it to the local detour page.
+- [ ] Adding `pawse-block.invalid` to the custom blocklist makes Chrome show its standard blocked-request page.
+- [ ] Visiting a domain from `rules/core.json` redirects to the local detour page.
 - [ ] The detour page shows bundled animal art and its buttons work.
-- [ ] Adding `pawse-block.invalid` to the allowlist stops the redirect.
+- [ ] Adding `pawse-block.invalid` to the allowlist stops the block.
 - [ ] Removing that allow entry restores the custom block.
-- [ ] With strict matching enabled, `very-porn-site.invalid` is redirected; with strict matching disabled, it is not.
+- [ ] With strict matching enabled, `very-porn-site.invalid` is blocked; with strict matching disabled, it is not.
 - [ ] Preferences and custom lists remain after restarting Chrome.
 - [ ] The detour page's Network panel shows no remote requests after a reload.
 - [ ] System, Light, and Dark modes remain readable in the popup, settings, and detour page.
@@ -39,6 +40,7 @@ The `.invalid` domains above are reserved for testing and cannot resolve to publ
 ## Change guidelines
 
 - Keep blocking rules limited to hostnames. Do not match words in paths or query strings.
+- Keep required host access synchronized with the bundled domains in `rules/core.json`.
 - Add a test when changing hostname normalization, precedence, rules, or themes.
 - Do not add analytics, remote fonts, remote images, or other runtime network dependencies.
 - Keep user-facing messages calm and nonjudgmental.

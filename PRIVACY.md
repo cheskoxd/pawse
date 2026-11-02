@@ -6,7 +6,7 @@ Pawse is designed to work locally. Its source code does not initiate remote requ
 
 When you open the toolbar popup, Pawse reads the active tab's URL so it can display the hostname and offer a one-click block action. The full URL is never stored. If you choose to block the site, Pawse normalizes and stores only its hostname.
 
-Chrome also evaluates top-level HTTP and HTTPS navigation against Pawse's local redirect and allow rules. Pawse does not receive or inspect page contents.
+Chrome evaluates top-level HTTP and HTTPS navigation against Pawse's local rules. Pawse does not receive or inspect page contents.
 
 ## Data Pawse stores
 
@@ -33,8 +33,11 @@ Chrome disables Pawse in Incognito by default. If you explicitly enable **Allow 
 ## Permissions
 
 - `storage` saves local preferences and hostname lists.
-- `declarativeNetRequestWithHostAccess` lets Chrome apply local redirect and allow rules.
-- HTTP and HTTPS host access lets those rules match website navigation and lets the popup read the active web tab's hostname when opened.
+- `activeTab` temporarily lets the popup read the active tab's hostname after you open it.
+- `declarativeNetRequest` lets Chrome apply local redirect, block, and allow rules.
+- Required host access is limited to the 35 domains in Pawse's bundled list and their subdomains. It lets those hosts redirect to the local animal page. Pawse does not request general access to every website.
+
+Custom and strict matches use Chrome's host-free block rules. Chrome shows its standard blocked-request page for those matches.
 
 ## Changes to this notice
 

@@ -162,10 +162,7 @@ async function applyRuleSettings() {
     addRules.push({
       id: DYNAMIC_RULE_IDS.customBlock,
       priority: 10,
-      action: {
-        type: "redirect",
-        redirect: { extensionPath: "/blocked.html" },
-      },
+      action: { type: "block" },
       condition: {
         requestDomains: settings.customBlocked,
         resourceTypes: ["main_frame"],

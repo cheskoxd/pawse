@@ -60,12 +60,18 @@ test("manifest and static rule resources are internally consistent", () => {
   const manifest = JSON.parse(
     fs.readFileSync(path.join(projectRoot, "manifest.json"), "utf8"),
   );
+  const coreRules = JSON.parse(
+    fs.readFileSync(path.join(projectRoot, "rules/core.json"), "utf8"),
+  );
+  const strictRules = JSON.parse(
+    fs.readFileSync(path.join(projectRoot, "rules/strict.json"), "utf8"),
+  );
 
   assert.equal(manifest.manifest_version, 3);
   assert.equal(manifest.minimum_chrome_version, "101");
-  assert.ok(
-    manifest.permissions.includes("declarativeNetRequestWithHostAccess"),
-  );
+  assert.ok(manifest.permissions.includes("activeTab"));
+  assert.ok(manifest.permissions.includes("declarativeNetRequest"));
+  assert.ok(!manifest.permissions.includes("declarativeNetRequestWithHostAccess"));
   assert.equal(
     manifest.declarative_net_request.rule_resources.find(
       (ruleset) => ruleset.id === "strict",
@@ -77,6 +83,47 @@ test("manifest and static rule resources are internally consistent", () => {
     /frame-ancestors 'none'/,
   );
 
+  const coreDomains = coreRules.flatMap(
+    (rule) => rule.condition.requestDomains || [],
+  );
+  const expectedHostPatterns = coreDomains
+    .map((domain) => `*://*.${domain}/*`)
+    .sort();
+  const requiredHostPatterns = [...manifest.host_permissions].sort();
+  const webAccessiblePatterns = [
+    ...manifest.web_accessible_resources[0].matches,
+  ].sort();
+
+  assert.equal(coreDomains.length, 35);
+  assert.deepEqual(requiredHostPatterns, expectedHostPatterns);
+  assert.deepEqual(webAccessiblePatterns, expectedHostPatterns);
+
+  const forbiddenBroadPatterns = new Set([
+    "<all_urls>",
+    "*://*/*",
+    "http://*/*",
+    "https://*/*",
+  ]);
+  for (const pattern of [
+    ...requiredHostPatterns,
+    ...webAccessiblePatterns,
+    ...(manifest.optional_host_permissions || []),
+  ]) {
+    assert.ok(!forbiddenBroadPatterns.has(pattern), `Broad pattern found: ${pattern}`);
+  }
+
+  for (const rule of coreRules) {
+    assert.equal(rule.priority, 20);
+    assert.equal(rule.action.type, "redirect");
+    assert.equal(rule.action.redirect.extensionPath, "/blocked.html");
+  }
+
+  for (const rule of strictRules) {
+    assert.equal(rule.priority, 1);
+    assert.equal(rule.action.type, "block");
+    assert.equal(rule.action.redirect, undefined);
+  }
+
   for (const ruleset of manifest.declarative_net_request.rule_resources) {
     const rules = JSON.parse(
       fs.readFileSync(path.join(projectRoot, ruleset.path), "utf8"),
@@ -84,14 +131,37 @@ test("manifest and static rule resources are internally consistent", () => {
     assert.ok(rules.length > 0);
 
     for (const rule of rules) {
-      assert.equal(rule.action.type, "redirect");
-      assert.equal(rule.action.redirect.extensionPath, "/blocked.html");
+      assert.ok(["block", "redirect"].includes(rule.action.type));
       assert.deepEqual(rule.condition.resourceTypes, ["main_frame"]);
       if (rule.condition.regexFilter) {
         assert.doesNotThrow(() => new RegExp(rule.condition.regexFilter, "i"));
       }
     }
   }
+});
+
+test("rule priorities preserve allow, bundled redirect, custom block, strict order", () => {
+  const coreRules = JSON.parse(
+    fs.readFileSync(path.join(projectRoot, "rules/core.json"), "utf8"),
+  );
+  const strictRules = JSON.parse(
+    fs.readFileSync(path.join(projectRoot, "rules/strict.json"), "utf8"),
+  );
+  const backgroundSource = fs.readFileSync(
+    path.join(projectRoot, "background.js"),
+    "utf8",
+  );
+
+  assert.match(
+    backgroundSource,
+    /id: DYNAMIC_RULE_IDS\.allow,\s+priority: 100,\s+action: \{ type: "allow" \},/,
+  );
+  assert.match(
+    backgroundSource,
+    /id: DYNAMIC_RULE_IDS\.customBlock,\s+priority: 10,\s+action: \{ type: "block" \},/,
+  );
+  assert.ok(coreRules.every((rule) => rule.priority === 20));
+  assert.ok(strictRules.every((rule) => rule.priority === 1));
 });
 
 test("strict rules match hostnames but not matching words in paths", () => {
