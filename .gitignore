@@ -1,0 +1,4 @@
+# Chrome-generated files for loaded or packed extensions.
+_metadata/
+*.crx
+*.pem

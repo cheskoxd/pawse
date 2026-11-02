@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Pawse</title>
+    <script src="lib/theme.js"></script>
+    <link rel="stylesheet" href="blocked.css" />
+    <script src="blocked.js" defer></script>
+  </head>
+  <body>
+    <main class="detour" aria-labelledby="page-title">
+      <section class="copy-panel">
+        <div class="brand" aria-label="Pawse">
+          <span class="brand-mark" aria-hidden="true">●</span>
+          <span>Pawse</span>
+        </div>
+
+        <p class="eyebrow">Tiny timeout</p>
+        <h1 id="page-title">Not this tab.</h1>
+        <p class="intro">
+          You asked Pawse to stop this site. Head back, clear the tab, or stay
+          for a quick animal break.
+        </p>
+        <p class="message" id="message"></p>
+
+        <div class="actions">
+          <button class="button button-primary" id="go-back" type="button">
+            Take me back
+          </button>
+          <button class="button button-secondary" id="show-another" type="button">
+            Show another animal
+          </button>
+        </div>
+        <button class="blank-link" id="open-blank" type="button">
+          Clear this tab
+        </button>
+      </section>
+
+      <figure class="art-panel">
+        <img
+          id="animal-art"
+          src="assets/cat-detour.webp"
+          alt="A sleepy orange cat stretched across a computer keyboard."
+        />
+        <figcaption id="art-caption">
+          Request reviewed. Cat says no.
+        </figcaption>
+      </figure>
+      <p class="sr-only" id="detour-status" aria-live="polite"></p>
+    </main>
+  </body>
+</html>

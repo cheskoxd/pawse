@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Pawse settings</title>
+    <script src="lib/theme.js"></script>
+    <link rel="stylesheet" href="options.css" />
+    <script src="lib/domain-utils.js" defer></script>
+    <script src="options.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#main" aria-label="Pawse settings">
+        <img src="icons/icon-48.png" width="36" height="36" alt="" />
+        <span>Pawse</span>
+      </a>
+      <p>Everything here stays on this device.</p>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <p class="eyebrow">Settings</p>
+        <h1>A calmer corner of the internet.</h1>
+        <p>
+          Pawse blocks a built-in list of adult sites and any hostnames you add.
+          Turn on strict matching for broader coverage, choose the animals, and add
+          exceptions when you need them.
+        </p>
+      </section>
+
+      <div class="settings-grid">
+        <section class="card protection-card" aria-labelledby="protection-heading">
+          <div class="card-heading">
+            <div>
+              <p class="section-number">01</p>
+              <h2 id="protection-heading">Protection</h2>
+            </div>
+            <label class="switch">
+              <span>Block adult sites</span>
+              <input id="protection-enabled" type="checkbox" />
+              <span class="switch-track" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <label class="check-row" for="strict-enabled">
+            <span>
+              <strong>Strict hostname matching</strong>
+              <small>
+                Catch more obvious adult hostnames. This can occasionally block an
+                unrelated site, so the allowlist always wins.
+              </small>
+            </span>
+            <input id="strict-enabled" type="checkbox" />
+          </label>
+        </section>
+
+        <section class="card" aria-labelledby="blocked-heading">
+          <div class="card-heading">
+            <div>
+              <p class="section-number">02</p>
+              <h2 id="blocked-heading">Your blocked sites</h2>
+            </div>
+          </div>
+          <p class="card-copy">
+            Add a URL or hostname. Pawse blocks that exact hostname and its subdomains.
+          </p>
+          <form class="domain-form" data-kind="block">
+            <label for="blocked-input">Website to block</label>
+            <div class="input-row">
+              <input
+                id="blocked-input"
+                name="domain"
+                type="text"
+                inputmode="url"
+                placeholder="example.com"
+                autocomplete="off"
+                aria-describedby="blocked-error"
+              />
+              <button type="submit">Add</button>
+            </div>
+            <p class="form-error" id="blocked-error" aria-live="polite"></p>
+          </form>
+          <ul class="domain-list" id="blocked-list" aria-label="Custom blocked sites"></ul>
+          <p class="empty-state" id="blocked-empty">No custom sites yet.</p>
+        </section>
+
+        <section class="card" aria-labelledby="allowed-heading">
+          <div class="card-heading">
+            <div>
+              <p class="section-number">03</p>
+              <h2 id="allowed-heading">Allowed sites</h2>
+            </div>
+          </div>
+          <p class="card-copy">
+            Add an exception if the built-in or strict rules catch the wrong site.
+          </p>
+          <form class="domain-form" data-kind="allow">
+            <label for="allowed-input">Website to allow</label>
+            <div class="input-row">
+              <input
+                id="allowed-input"
+                name="domain"
+                type="text"
+                inputmode="url"
+                placeholder="example.com"
+                autocomplete="off"
+                aria-describedby="allowed-error"
+              />
+              <button type="submit">Add</button>
+            </div>
+            <p class="form-error" id="allowed-error" aria-live="polite"></p>
+          </form>
+          <ul class="domain-list" id="allowed-list" aria-label="Allowed sites"></ul>
+          <p class="empty-state" id="allowed-empty">No exceptions yet.</p>
+        </section>
+
+        <section class="card" aria-labelledby="page-heading">
+          <div class="card-heading">
+            <div>
+              <p class="section-number">04</p>
+              <h2 id="page-heading">Blocked page</h2>
+            </div>
+          </div>
+
+          <fieldset>
+            <legend>Choose animals</legend>
+            <div class="choice-row">
+              <label class="choice">
+                <input type="radio" name="animal-theme" value="mix" />
+                <span>Surprise me</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="animal-theme" value="cats" />
+                <span>Cats</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="animal-theme" value="dogs" />
+                <span>Dogs</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <label class="check-row compact" for="show-messages">
+            <span>
+              <strong>Show short messages</strong>
+              <small>Quiet, nonjudgmental copy on the detour page.</small>
+            </span>
+            <input id="show-messages" type="checkbox" />
+          </label>
+        </section>
+
+        <section class="card" aria-labelledby="appearance-heading">
+          <div class="card-heading">
+            <div>
+              <p class="section-number">05</p>
+              <h2 id="appearance-heading">Appearance</h2>
+            </div>
+          </div>
+
+          <fieldset>
+            <legend>Color theme</legend>
+            <div class="choice-row">
+              <label class="choice">
+                <input type="radio" name="color-theme" value="system" />
+                <span>System</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="color-theme" value="light" />
+                <span>Light</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="color-theme" value="dark" />
+                <span>Dark</span>
+              </label>
+            </div>
+          </fieldset>
+          <p class="card-copy appearance-copy">
+            System follows your computer's light or dark appearance.
+          </p>
+        </section>
+
+      </div>
+
+      <p class="save-status" id="save-status" role="status" aria-live="polite"></p>
+    </main>
+
+    <footer>
+      <p>
+        Pawse is a self-control tool, not tamper-resistant parental controls. New
+        sites and mixed-use platforms can slip past a hostname list.
+      </p>
+      <p>
+        Chrome requires site access so Pawse can redirect matching hostnames. Pawse
+        does not upload URLs or browsing data.
+      </p>
+    </footer>
+  </body>
+</html>

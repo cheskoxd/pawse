@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Pawse</title>
+    <script src="lib/theme.js"></script>
+    <link rel="stylesheet" href="popup.css" />
+    <script src="lib/domain-utils.js" defer></script>
+    <script src="popup.js" defer></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="brand-lockup">
+        <img src="icons/icon-32.png" width="28" height="28" alt="" />
+        <span>Pawse</span>
+      </div>
+      <span class="privacy-pill">On-device</span>
+    </header>
+
+    <main>
+      <section
+        class="status-card"
+        id="status-card"
+        aria-labelledby="status-title"
+        aria-busy="true"
+      >
+        <div>
+          <p class="kicker">Protection</p>
+          <h1 id="status-title">Checking status...</h1>
+          <p id="status-copy">Reading your local settings.</p>
+        </div>
+        <label class="switch" aria-label="Turn blocking on or off">
+          <input id="protection-toggle" type="checkbox" disabled />
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+      </section>
+
+      <section class="current-site" aria-labelledby="site-title">
+        <p class="kicker">Current site</p>
+        <h2 id="site-title">Checking this tab...</h2>
+        <button class="site-button" id="block-site" type="button" disabled>
+          Block this website
+        </button>
+        <p class="helper" id="site-helper"></p>
+      </section>
+
+      <p class="notice" id="notice" role="status" aria-live="polite"></p>
+    </main>
+
+    <footer>
+      <button id="open-settings" type="button">Settings</button>
+      <span>Pawse does not send browsing data off this device.</span>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": {
+        "extensionPath": "/blocked.html"
+      }
+    },
+    "condition": {
+      "requestDomains": [
+        "pornhub.com",
+        "xvideos.com",
+        "xnxx.com",
+        "xhamster.com",
+        "redtube.com",
+        "youporn.com",
+        "tube8.com",
+        "spankbang.com",
+        "eporner.com",
+        "tnaflix.com",
+        "drtuber.com",
+        "beeg.com",
+        "youjizz.com",
+        "hqporner.com",
+        "thumbzilla.com",
+        "porntrex.com",
+        "rule34.xxx",
+        "rule34.paheal.net",
+        "nhentai.net",
+        "hanime.tv",
+        "hentaihaven.xxx",
+        "hentai-foundry.com",
+        "chaturbate.com",
+        "stripchat.com",
+        "livejasmin.com",
+        "camsoda.com",
+        "bongacams.com",
+        "myfreecams.com",
+        "brazzers.com",
+        "bangbros.com",
+        "realitykings.com",
+        "digitalplayground.com",
+        "naughtyamerica.com",
+        "teamskeet.com",
+        "mofos.com"
+      ],
+      "resourceTypes": [
+        "main_frame"
+      ]
+    }
+  }
+]
