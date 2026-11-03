@@ -5,14 +5,14 @@
 <h1 align="center">Pawse</h1>
 
 <p align="center">
-  An on-device Chrome extension that redirects 35 known adult sites and blocks custom matches.
+  A privacy-conscious Chrome extension that redirects 35 known adult sites to a calmer animal break.
 </p>
 
 <p align="center">
   Manifest V3 &nbsp;·&nbsp; Chrome 101+ &nbsp;·&nbsp; No build step &nbsp;·&nbsp; No telemetry
 </p>
 
-Pawse redirects top-level visits to 35 bundled adult domains. You can block more hostnames, create exceptions with an allowlist, and optionally enable broader hostname matching. Everything runs from the files in this repository.
+Pawse redirects top-level visits to 35 bundled adult domains. You can block more hostnames, create exceptions with an allowlist, and optionally enable broader hostname matching. Blocking and settings stay local; the detour page requests a fresh cat or dog image from a narrowly allowlisted animal API.
 
 ## Features
 
@@ -20,10 +20,10 @@ Pawse redirects top-level visits to 35 bundled adult domains. You can block more
 - Blocks custom hostnames and their subdomains without requesting ongoing access to them.
 - Lets the allowlist override bundled, strict, and custom blocking rules.
 - Offers optional strict hostname rules for broader coverage.
-- Rotates between bundled cat and dog artwork with short, nonjudgmental messages.
+- Loads random cats from [Cataas](https://cataas.com/) and random dogs from [Dog CEO](https://dog.ceo/dog-api/), with bundled artwork as an offline fallback.
 - Includes System, Light, and Dark appearance modes.
 - Stores settings locally with `chrome.storage.local`.
-- Contains no analytics, ads, accounts, or remote image feeds.
+- Contains no analytics, ads, or accounts, and never sends the blocked URL to an image service.
 
 ## Install from source
 
@@ -59,8 +59,9 @@ Custom and strict matches use Chrome's safe `block` rules, which do not need hos
 | `activeTab` | Temporarily reads the current tab's hostname after you open the popup. |
 | `declarativeNetRequest` | Lets Chrome apply local redirect, block, and allow rules without exposing page contents to Pawse. |
 | 35 listed host patterns | Lets those domains and their subdomains redirect to the local Pawse page. Pawse does not request access to every site. |
+| `https://dog.ceo/*`, `https://images.dog.ceo/*`, `https://cataas.com/*` | Requests random animal metadata and image bytes only while the detour page is open. |
 
-Pawse's code does not initiate remote requests or upload URLs. See [PRIVACY.md](PRIVACY.md) for the full data and permissions explanation.
+The animal requests use no cookies or referrer and do not include the blocked hostname, custom lists, or settings. The providers still receive ordinary connection details such as an IP address. See [PRIVACY.md](PRIVACY.md) for the full data and permissions explanation.
 
 ## Limits
 
@@ -70,7 +71,7 @@ Pawse is also not tamper-resistant parental-control software. Anyone with access
 
 ## Development
 
-There is no generated output, package manifest, or dependency install. The checked-in HTML, CSS, JavaScript, JSON, and image files are the extension.
+There is no generated output, package manifest, or dependency install. The checked-in HTML, CSS, JavaScript, JSON, and fallback image files are the extension.
 
 Run the automated checks with Node.js:
 
@@ -78,7 +79,7 @@ Run the automated checks with Node.js:
 node --test tests/domain-utils.test.js
 ```
 
-These tests cover hostname utilities, rule-file consistency, strict-rule examples, and theme support. They are not browser end-to-end tests. See [CONTRIBUTING.md](CONTRIBUTING.md) for the manual Chrome checklist and contribution workflow.
+These tests cover hostname utilities, rule-file consistency, animal-service URL validation, strict-rule examples, and theme support. They are not browser end-to-end tests. See [CONTRIBUTING.md](CONTRIBUTING.md) for the manual Chrome checklist and contribution workflow.
 
 ## Project artwork
 

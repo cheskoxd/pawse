@@ -4,8 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
+    <meta name="referrer" content="no-referrer" />
     <title>Pawse</title>
     <script src="lib/theme.js"></script>
+    <script src="lib/animal-api.js"></script>
     <link rel="stylesheet" href="blocked.css" />
     <script src="blocked.js" defer></script>
   </head>
@@ -38,7 +40,7 @@
         </button>
       </section>
 
-      <figure class="art-panel">
+      <figure class="art-panel" id="art-panel" aria-busy="true">
         <img
           id="animal-art"
           src="assets/cat-detour.webp"

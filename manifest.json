@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Pawse",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "minimum_chrome_version": "101",
-  "description": "Redirects known adult sites to a calm local page and blocks custom matches without broad host access.",
+  "description": "Redirects known adult sites to a calm animal break and blocks custom matches without broad host access.",
   "permissions": [
     "activeTab",
     "declarativeNetRequest",
@@ -44,7 +44,10 @@
     "*://*.digitalplayground.com/*",
     "*://*.naughtyamerica.com/*",
     "*://*.teamskeet.com/*",
-    "*://*.mofos.com/*"
+    "*://*.mofos.com/*",
+    "https://dog.ceo/*",
+    "https://images.dog.ceo/*",
+    "https://cataas.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -82,7 +85,7 @@
     ]
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; frame-ancestors 'none'"
+    "extension_pages": "script-src 'self'; object-src 'none'; connect-src https://dog.ceo https://images.dog.ceo https://cataas.com; img-src 'self' blob:; frame-ancestors 'none'"
   },
   "web_accessible_resources": [
     {

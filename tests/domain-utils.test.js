@@ -11,6 +11,11 @@ const {
   normalizeDomainInput,
   removeOverlaps,
 } = require("../lib/domain-utils.js");
+const {
+  SERVICES,
+  imageUrlFromResponse,
+  isTrustedImageUrl,
+} = require("../lib/animal-api.js");
 
 const projectRoot = path.resolve(__dirname, "..");
 
@@ -68,6 +73,7 @@ test("manifest and static rule resources are internally consistent", () => {
   );
 
   assert.equal(manifest.manifest_version, 3);
+  assert.equal(manifest.version, "1.1.0");
   assert.equal(manifest.minimum_chrome_version, "101");
   assert.ok(manifest.permissions.includes("activeTab"));
   assert.ok(manifest.permissions.includes("declarativeNetRequest"));
@@ -78,25 +84,48 @@ test("manifest and static rule resources are internally consistent", () => {
     ).enabled,
     false,
   );
-  assert.match(
-    manifest.content_security_policy.extension_pages,
-    /frame-ancestors 'none'/,
+  const csp = Object.fromEntries(
+    manifest.content_security_policy.extension_pages
+      .split(";")
+      .map((directive) => directive.trim())
+      .filter(Boolean)
+      .map((directive) => {
+        const [name, ...values] = directive.split(/\s+/);
+        return [name, values];
+      }),
   );
+  assert.deepEqual(csp["script-src"], ["'self'"]);
+  assert.deepEqual(csp["object-src"], ["'none'"]);
+  assert.deepEqual(csp["connect-src"], [
+    "https://dog.ceo",
+    "https://images.dog.ceo",
+    "https://cataas.com",
+  ]);
+  assert.deepEqual(csp["img-src"], ["'self'", "blob:"]);
+  assert.deepEqual(csp["frame-ancestors"], ["'none'"]);
 
   const coreDomains = coreRules.flatMap(
     (rule) => rule.condition.requestDomains || [],
   );
-  const expectedHostPatterns = coreDomains
+  const expectedCoreHostPatterns = coreDomains
     .map((domain) => `*://*.${domain}/*`)
     .sort();
+  const expectedAnimalApiPatterns = [
+    "https://cataas.com/*",
+    "https://dog.ceo/*",
+    "https://images.dog.ceo/*",
+  ].sort();
   const requiredHostPatterns = [...manifest.host_permissions].sort();
   const webAccessiblePatterns = [
     ...manifest.web_accessible_resources[0].matches,
   ].sort();
 
   assert.equal(coreDomains.length, 35);
-  assert.deepEqual(requiredHostPatterns, expectedHostPatterns);
-  assert.deepEqual(webAccessiblePatterns, expectedHostPatterns);
+  assert.deepEqual(
+    requiredHostPatterns,
+    [...expectedCoreHostPatterns, ...expectedAnimalApiPatterns].sort(),
+  );
+  assert.deepEqual(webAccessiblePatterns, expectedCoreHostPatterns);
 
   const forbiddenBroadPatterns = new Set([
     "<all_urls>",
@@ -210,4 +239,105 @@ test("theme helper supports system, light, and dark modes", () => {
       /lib\/theme\.js/,
     );
   }
+});
+
+test("animal APIs use fixed HTTPS endpoints and accept only trusted image URLs", () => {
+  assert.equal(
+    SERVICES.dogs.endpoint,
+    "https://dog.ceo/api/breeds/image/random",
+  );
+  assert.equal(
+    SERVICES.cats.endpoint,
+    "https://cataas.com/cat?json=true&type=medium&format=webp",
+  );
+
+  assert.equal(
+    imageUrlFromResponse("dogs", {
+      status: "success",
+      message: "https://images.dog.ceo/breeds/hound/example.jpg",
+    }),
+    "https://images.dog.ceo/breeds/hound/example.jpg",
+  );
+  assert.equal(
+    imageUrlFromResponse("cats", {
+      url: "https://cataas.com/cat/abc123?position=center",
+    }),
+    "https://cataas.com/cat/abc123?position=center",
+  );
+  assert.equal(
+    imageUrlFromResponse("cats", { id: "abc_123-Z" }),
+    "https://cataas.com/cat/abc_123-Z",
+  );
+  assert.equal(
+    imageUrlFromResponse("cats", { url: "/cat/relative123" }),
+    "https://cataas.com/cat/relative123",
+  );
+
+  assert.equal(
+    isTrustedImageUrl(
+      "dogs",
+      "https://images.dog.ceo.evil.example/breeds/hound/example.jpg",
+    ),
+    false,
+  );
+  assert.equal(
+    isTrustedImageUrl("dogs", "http://images.dog.ceo/breeds/hound/a.jpg"),
+    false,
+  );
+  assert.equal(
+    isTrustedImageUrl("cats", "https://cataas.com.evil.example/cat/abc"),
+    false,
+  );
+  assert.equal(
+    isTrustedImageUrl("cats", "https://cataas.com/doc.json"),
+    false,
+  );
+  assert.equal(
+    isTrustedImageUrl("dogs", "https://images.dog.ceo/not-breeds/a.jpg"),
+    false,
+  );
+  assert.equal(isTrustedImageUrl("cats", "javascript:alert(1)"), false);
+  assert.equal(
+    isTrustedImageUrl("cats", "https://user:pass@cataas.com/cat/abc"),
+    false,
+  );
+  assert.throws(
+    () => imageUrlFromResponse("dogs", { status: "error" }),
+    /successful response/,
+  );
+  assert.throws(
+    () =>
+      imageUrlFromResponse("dogs", {
+        status: "success",
+        message: "https://example.com/dog.jpg",
+      }),
+    /untrusted image URL/,
+  );
+  assert.throws(
+    () => imageUrlFromResponse("cats", { id: "../doc.json" }),
+    /untrusted image URL/,
+  );
+  assert.throws(
+    () => imageUrlFromResponse("birds", { url: "https://example.com/bird.jpg" }),
+    /Unknown animal kind/,
+  );
+});
+
+test("detour page fetches private random images and keeps local fallbacks", () => {
+  const html = fs.readFileSync(path.join(projectRoot, "blocked.html"), "utf8");
+  const source = fs.readFileSync(path.join(projectRoot, "blocked.js"), "utf8");
+
+  assert.ok(html.indexOf("lib/animal-api.js") < html.indexOf("blocked.js"));
+  assert.match(source, /credentials: "omit"/);
+  assert.match(source, /redirect: "error"/);
+  assert.match(source, /referrerPolicy: "no-referrer"/);
+  assert.match(source, /cache: "no-store"/);
+  assert.match(source, /REQUEST_TIMEOUT_MS = 8000/);
+  assert.match(source, /MAX_IMAGE_BYTES = 10 \* 1024 \* 1024/);
+  assert.match(source, /MAX_IMAGE_PIXELS = 24 \* 1024 \* 1024/);
+  assert.match(source, /ALLOWED_IMAGE_TYPES/);
+  assert.doesNotMatch(source, /image\/svg\+xml/);
+  assert.match(source, /assets\/cat-detour\.webp/);
+  assert.match(source, /assets\/dog-detour\.webp/);
+  assert.match(source, /URL\.revokeObjectURL/);
 });

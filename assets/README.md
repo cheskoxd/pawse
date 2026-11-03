@@ -6,7 +6,7 @@ The artwork is distributed under the repository's [MIT License](../LICENSE).
 
 | File | Use |
 | --- | --- |
-| `cat-detour.webp` | Cat illustration shown on the local detour page. |
-| `dog-detour.webp` | Dog illustration shown on the local detour page. |
+| `cat-detour.webp` | Local cat fallback used when Cataas is unavailable. |
+| `dog-detour.webp` | Local dog fallback used when Dog CEO is unavailable. |
 | `github-banner.png` | Panoramic README artwork. |
 | `github-square.png` | Square project and social artwork. |

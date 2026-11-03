@@ -327,6 +327,16 @@ h1 {
   object-fit: cover;
   transform-origin: center;
   animation: art-arrive 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition:
+    opacity 220ms ease,
+    filter 220ms ease,
+    transform 220ms ease;
+}
+
+.art-panel.is-loading img {
+  opacity: 0.68;
+  filter: saturate(0.78) blur(1px);
+  transform: scale(1.015);
 }
 
 .art-panel figcaption {
